@@ -1,0 +1,157 @@
+.container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  padding: 24px;
+  color: #e8e8e8;
+  border: 1px solid #0f3460;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #ffd700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title::before {
+  content: '📜';
+}
+
+.completed {
+  font-size: 0.85rem;
+  color: #4ade80;
+}
+
+.empty {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+.categories {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.category {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.categoryIcon {
+  font-size: 1.1rem;
+}
+
+.categoryLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.questList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quest {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.quest:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.quest.completed {
+  opacity: 0.7;
+  border-color: #4ade80;
+}
+
+.questHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.questType {
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #000;
+}
+
+.xpReward {
+  font-size: 0.8rem;
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.questTitle {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.questDesc {
+  margin: 0 0 10px 0;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.progressSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progressBar {
+  flex: 1;
+  height: 6px;
+  background: #0a0a0a;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.progressText {
+  font-size: 0.75rem;
+  color: #888;
+  min-width: 50px;
+  text-align: right;
+}

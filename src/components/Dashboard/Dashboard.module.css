@@ -1,0 +1,218 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.logo {
+  margin: 0;
+  font-size: 2rem;
+  background: linear-gradient(90deg, #ffd700, #ff6b6b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.resetBtn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #333;
+  color: #666;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.resetBtn:hover {
+  border-color: #e94560;
+  color: #e94560;
+}
+
+.notifications {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notification {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  color: #000;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mainColumn,
+.sideColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.recentSection {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.recentWorkouts,
+.recentLogs {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  padding: 24px;
+  color: #e8e8e8;
+  border: 1px solid #0f3460;
+}
+
+.recentTitle {
+  margin: 0 0 16px 0;
+  font-size: 1.2rem;
+  color: #ffd700;
+}
+
+.recentWorkouts .recentTitle::before {
+  content: '🏋️ ';
+}
+
+.recentLogs .recentTitle::before {
+  content: '📊 ';
+}
+
+.workoutList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.workoutCard {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.workoutHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.workoutDate {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.workoutVolume {
+  color: #fbbf24;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.workoutExercises {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.exerciseTag {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.workoutStats {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.exerciseMore {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.logList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.logCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+}
+
+.logDate {
+  color: #888;
+  font-size: 0.9rem;
+  min-width: 100px;
+}
+
+.logStats {
+  display: flex;
+  gap: 12px;
+  font-size: 0.85rem;
+}
+
+.logSleep {
+  color: #60a5fa;
+}
+
+.logScore {
+  color: #4ade80;
+  font-weight: 500;
+}
+
+.logMeals {
+  color: #fbbf24;
+}
+
+.logSupps {
+  color: #a78bfa;
+}

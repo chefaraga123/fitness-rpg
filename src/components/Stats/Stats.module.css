@@ -1,0 +1,150 @@
+.container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  padding: 24px;
+  color: #e8e8e8;
+  border: 1px solid #0f3460;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #ffd700;
+}
+
+.title::before {
+  content: '📈 ';
+}
+
+.timeRangeSelector {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.rangeBtn {
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  color: #888;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rangeBtn:hover {
+  color: #ccc;
+}
+
+.rangeBtn.active {
+  background: #4ade80;
+  color: #000;
+  font-weight: 500;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: #888;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 6px;
+}
+
+.tab:hover {
+  color: #ccc;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab.active {
+  color: #fff;
+  background: rgba(74, 222, 128, 0.2);
+}
+
+.chartArea {
+  min-height: 300px;
+}
+
+.chartTitle {
+  margin: 20px 0 12px;
+  font-size: 0.95rem;
+  color: #aaa;
+  font-weight: 500;
+}
+
+.chartTitle:first-child {
+  margin-top: 0;
+}
+
+.chart {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 16px 8px 8px 0;
+}
+
+.empty,
+.noData {
+  color: #666;
+  text-align: center;
+  padding: 40px 20px;
+  font-style: italic;
+}
+
+.exerciseSelector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.exerciseSelector label {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.exerciseSelect {
+  flex: 1;
+  max-width: 300px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background: #0a0a0a;
+  color: #e8e8e8;
+  font-size: 0.9rem;
+}
+
+.exerciseSelect:focus {
+  outline: none;
+  border-color: #4ade80;
+}
+
+/* Recharts tooltip overrides */
+:global(.recharts-tooltip-item) {
+  color: #e8e8e8 !important;
+}
+
+:global(.recharts-legend-item-text) {
+  color: #aaa !important;
+}

@@ -1,0 +1,231 @@
+.container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  padding: 24px;
+  color: #e8e8e8;
+  border: 1px solid #0f3460;
+}
+
+.title {
+  margin: 0 0 16px 0;
+  font-size: 1.2rem;
+  color: #a78bfa;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title::before {
+  content: '🌙';
+}
+
+.dropzone {
+  border: 2px dashed #333;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.dropzone:hover,
+.dropzone.active {
+  border-color: #a78bfa;
+  background: rgba(167, 139, 250, 0.05);
+}
+
+.fileInput {
+  display: none;
+}
+
+.dropLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.dropIcon {
+  font-size: 2rem;
+}
+
+.mappingSection,
+.previewSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mappingInfo,
+.previewInfo {
+  margin: 0;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.mappingGroup {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.mappingGroup h4 {
+  margin: 0 0 10px 0;
+  font-size: 0.85rem;
+  color: #a78bfa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mappingGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.mappingField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mappingLabel {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+.mappingSelect {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background: #0a0a0a;
+  color: #e8e8e8;
+  font-size: 0.85rem;
+}
+
+.mappingSelect:focus {
+  outline: none;
+  border-color: #a78bfa;
+}
+
+.supplementGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.supplementTag {
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid #333;
+  background: transparent;
+  color: #888;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.supplementTag:hover {
+  border-color: #666;
+}
+
+.supplementTag.selected {
+  background: rgba(167, 139, 250, 0.2);
+  border-color: #a78bfa;
+  color: #a78bfa;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.btnPrimary,
+.btnSecondary {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnPrimary {
+  background: #a78bfa;
+  color: #000;
+  border: none;
+}
+
+.btnPrimary:hover {
+  background: #8b5cf6;
+  transform: translateY(-1px);
+}
+
+.btnSecondary {
+  background: transparent;
+  color: #888;
+  border: 1px solid #333;
+}
+
+.btnSecondary:hover {
+  border-color: #666;
+  color: #ccc;
+}
+
+.previewList {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.previewItem {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.85rem;
+}
+
+.previewItem:last-child {
+  border-bottom: none;
+}
+
+.previewDate {
+  color: #888;
+  min-width: 90px;
+}
+
+.previewSleep {
+  color: #60a5fa;
+}
+
+.previewScore {
+  color: #4ade80;
+  font-weight: 500;
+}
+
+.previewMeals {
+  color: #fbbf24;
+}
+
+.previewSupps {
+  color: #a78bfa;
+}
+
+.moreItems {
+  margin: 8px 0 0;
+  color: #666;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.noData {
+  color: #666;
+  text-align: center;
+  padding: 20px;
+}
