@@ -6,6 +6,7 @@ import { Achievements } from '../Achievements';
 import { DataImport } from '../DataImport';
 import { LifestyleImport } from '../LifestyleImport';
 import { Stats } from '../Stats';
+import { Supplements } from '../Supplements';
 import styles from './Dashboard.module.css';
 
 interface Props {
@@ -16,7 +17,7 @@ interface Props {
   onReset: () => void;
 }
 
-type Tab = 'overview' | 'quests' | 'achievements' | 'charts' | 'import';
+type Tab = 'overview' | 'quests' | 'achievements' | 'supplements' | 'charts' | 'import';
 
 export function Dashboard({
   state,
@@ -64,6 +65,12 @@ export function Dashboard({
           onClick={() => setActiveTab('achievements')}
         >
           Achievements
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'supplements' ? styles.active : ''}`}
+          onClick={() => setActiveTab('supplements')}
+        >
+          Supplements
         </button>
         <button
           className={`${styles.tab} ${activeTab === 'charts' ? styles.active : ''}`}
@@ -163,6 +170,10 @@ export function Dashboard({
 
         {activeTab === 'achievements' && (
           <Achievements achievements={state.achievements} />
+        )}
+
+        {activeTab === 'supplements' && (
+          <Supplements dailyLogs={state.dailyLogs} />
         )}
 
         {activeTab === 'charts' && (

@@ -1,0 +1,206 @@
+.container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  padding: 24px;
+  color: #e8e8e8;
+  border: 1px solid #0f3460;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #ffd700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title::before {
+  content: '💊';
+}
+
+.empty {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.timeRangeSelector {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.rangeBtn {
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  color: #888;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.rangeBtn:hover {
+  color: #ccc;
+}
+
+.rangeBtn.active {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.statHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.statName {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.streak {
+  font-size: 0.7rem;
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.15);
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+.statBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.complianceBar {
+  height: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.complianceFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.statNumbers {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+.compliancePercent {
+  font-weight: 600;
+  color: #ccc;
+}
+
+.statCount {
+  color: #666;
+}
+
+.historySection {
+  margin-top: 24px;
+}
+
+.historyTitle {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  color: #a78bfa;
+}
+
+.historyTable {
+  overflow-x: auto;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.historyHeader {
+  display: flex;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #888;
+}
+
+.historyRow {
+  display: flex;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  font-size: 0.8rem;
+}
+
+.historyRow:last-child {
+  border-bottom: none;
+}
+
+.historyRow:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.dateCol {
+  min-width: 70px;
+  flex-shrink: 0;
+  color: #888;
+}
+
+.suppCol {
+  min-width: 60px;
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historyHeader .suppCol {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+}
+
+.taken {
+  color: #4ade80;
+  font-weight: bold;
+}
+
+.missed {
+  color: #ef4444;
+}
+
+.na {
+  color: #444;
+}
