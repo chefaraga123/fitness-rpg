@@ -41,22 +41,35 @@
 .categories {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 8px;
 }
 
 .category {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
-  padding: 12px;
+  overflow: hidden;
 }
 
 .categoryHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.categoryHeader:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.categoryInfo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 10px;
 }
 
 .categoryIcon {
@@ -64,17 +77,34 @@
 }
 
 .categoryLabel {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #aaa;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #e8e8e8;
+}
+
+.categoryCount {
+  font-size: 0.8rem;
+  color: #888;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.chevron {
+  color: #666;
+  font-size: 0.7rem;
+  transition: transform 0.2s;
+}
+
+.chevron.expanded {
+  transform: rotate(90deg);
 }
 
 .questList {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding: 0 12px 12px;
 }
 
 .quest {
@@ -90,7 +120,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.quest.completed {
+.completedQuest {
   opacity: 0.7;
   border-color: #4ade80;
 }

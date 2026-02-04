@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Quest } from '../../types';
 import styles from './Quests.module.css';
 
@@ -27,18 +28,37 @@ const typeColors: Record<Quest['type'], string> = {
 };
 
 export function Quests({ quests }: Props) {
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+
   const activeQuests = quests.filter((q) => !q.completed);
   const completedCount = quests.filter((q) => q.completed).length;
 
-  // Group by category
   const workoutQuests = activeQuests.filter((q) => q.category === 'workout');
   const sleepQuests = activeQuests.filter((q) => q.category === 'sleep');
   const nutritionQuests = activeQuests.filter((q) => q.category === 'nutrition');
 
+  const toggleCategory = (category: string) => {
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(category)) {
+        next.delete(category);
+      } else {
+        next.add(category);
+      }
+      return next;
+    });
+  };
+
+  const categories = [
+    { key: 'workout', quests: workoutQuests },
+    { key: 'sleep', quests: sleepQuests },
+    { key: 'nutrition', quests: nutritionQuests },
+  ].filter((c) => c.quests.length > 0);
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h3 className={styles.title}>Active Quests</h3>
+        <h3 className={styles.title}>Quests</h3>
         <span className={styles.completed}>{completedCount} completed</span>
       </div>
 
@@ -46,48 +66,42 @@ export function Quests({ quests }: Props) {
         <p className={styles.empty}>All quests completed!</p>
       ) : (
         <div className={styles.categories}>
-          {workoutQuests.length > 0 && (
-            <QuestCategory
-              category="workout"
-              quests={workoutQuests}
-            />
-          )}
-          {sleepQuests.length > 0 && (
-            <QuestCategory
-              category="sleep"
-              quests={sleepQuests}
-            />
-          )}
-          {nutritionQuests.length > 0 && (
-            <QuestCategory
-              category="nutrition"
-              quests={nutritionQuests}
-            />
-          )}
+          {categories.map(({ key, quests: categoryQuests }) => {
+            const isExpanded = expandedCategories.has(key);
+            const category = key as Quest['category'];
+            const activeCount = categoryQuests.filter((q) => !q.completed).length;
+            const progressCount = categoryQuests.filter((q) => q.progress > 0 && !q.completed).length;
+
+            return (
+              <div key={key} className={styles.category}>
+                <button
+                  className={styles.categoryHeader}
+                  onClick={() => toggleCategory(key)}
+                >
+                  <div className={styles.categoryInfo}>
+                    <span className={styles.categoryIcon}>{categoryIcons[category]}</span>
+                    <span className={styles.categoryLabel}>{categoryLabels[category]}</span>
+                    <span className={styles.categoryCount}>
+                      {progressCount > 0 ? `${progressCount} in progress` : `${activeCount} active`}
+                    </span>
+                  </div>
+                  <span className={`${styles.chevron} ${isExpanded ? styles.expanded : ''}`}>
+                    ▶
+                  </span>
+                </button>
+
+                {isExpanded && (
+                  <div className={styles.questList}>
+                    {categoryQuests.map((quest) => (
+                      <QuestCard key={quest.id} quest={quest} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
-    </div>
-  );
-}
-
-function QuestCategory({
-  category,
-  quests,
-}: {
-  category: Quest['category'];
-  quests: Quest[];
-}) {
-  return (
-    <div className={styles.category}>
-      <div className={styles.categoryHeader}>
-        <span className={styles.categoryIcon}>{categoryIcons[category]}</span>
-        <span className={styles.categoryLabel}>{categoryLabels[category]}</span>
-      </div>
-      <div className={styles.questList}>
-        {quests.map((quest) => (
-          <QuestCard key={quest.id} quest={quest} />
-        ))}
-      </div>
     </div>
   );
 }
@@ -96,7 +110,7 @@ function QuestCard({ quest }: { quest: Quest }) {
   const progress = Math.min((quest.progress / quest.target) * 100, 100);
 
   return (
-    <div className={`${styles.quest} ${quest.completed ? styles.completed : ''}`}>
+    <div className={`${styles.quest} ${quest.completed ? styles.completedQuest : ''}`}>
       <div className={styles.questHeader}>
         <span
           className={styles.questType}

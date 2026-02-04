@@ -31,12 +31,20 @@ function AchievementBadge({ achievement }: { achievement: Achievement }) {
   return (
     <div
       className={`${styles.badge} ${achievement.unlocked ? styles.unlocked : styles.locked}`}
-      title={achievement.description}
     >
       <span className={styles.icon}>
         {achievement.unlocked ? achievement.icon : '🔒'}
       </span>
       <span className={styles.badgeTitle}>{achievement.title}</span>
+      <div className={styles.tooltip}>
+        <strong>{achievement.title}</strong>
+        <p>{achievement.description}</p>
+        {achievement.unlocked && achievement.unlockedAt && (
+          <span className={styles.unlockedDate}>
+            Unlocked {new Date(achievement.unlockedAt).toLocaleDateString()}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
