@@ -7,6 +7,7 @@ import { DataImport } from '../DataImport';
 import { LifestyleImport } from '../LifestyleImport';
 import { Stats } from '../Stats';
 import { Supplements } from '../Supplements';
+import { Meals } from '../Meals';
 import styles from './Dashboard.module.css';
 
 interface Props {
@@ -17,7 +18,7 @@ interface Props {
   onReset: () => void;
 }
 
-type Tab = 'overview' | 'quests' | 'achievements' | 'supplements' | 'charts' | 'import';
+type Tab = 'overview' | 'quests' | 'achievements' | 'meals' | 'supplements' | 'charts' | 'import';
 
 export function Dashboard({
   state,
@@ -65,6 +66,12 @@ export function Dashboard({
           onClick={() => setActiveTab('achievements')}
         >
           Achievements
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'meals' ? styles.active : ''}`}
+          onClick={() => setActiveTab('meals')}
+        >
+          Meals
         </button>
         <button
           className={`${styles.tab} ${activeTab === 'supplements' ? styles.active : ''}`}
@@ -170,6 +177,10 @@ export function Dashboard({
 
         {activeTab === 'achievements' && (
           <Achievements achievements={state.achievements} />
+        )}
+
+        {activeTab === 'meals' && (
+          <Meals dailyLogs={state.dailyLogs} />
         )}
 
         {activeTab === 'supplements' && (
