@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { GameState, WorkoutSet, DailyLog as DailyLogType } from '../../types';
 import { Character } from '../Character';
 import { Quests } from '../Quests';
@@ -31,6 +31,29 @@ export function Dashboard({
   onAddDailyLog,
 }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
+  const [expandedWorkout, setExpandedWorkout] = useState<string | null>(null);
+
+  const mergedMealLogs = useMemo(() => {
+    const byDate = new Map<string, DailyLogType>();
+    for (const log of [...state.dailyLogs, ...supabaseMeals]) {
+      const existing = byDate.get(log.date);
+      if (existing) {
+        byDate.set(log.date, {
+          ...existing,
+          meal1: existing.meal1 || log.meal1,
+          meal2: existing.meal2 || log.meal2,
+          meal3: existing.meal3 || log.meal3,
+          snacks: existing.snacks || log.snacks,
+          mealsLogged: [existing.meal1 || log.meal1, existing.meal2 || log.meal2, existing.meal3 || log.meal3].filter(Boolean).length,
+        });
+      } else {
+        byDate.set(log.date, { ...log });
+      }
+    }
+    return Array.from(byDate.values()).sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+  }, [state.dailyLogs, supabaseMeals]);
 
   return (
     <div className={styles.container}>
@@ -106,28 +129,55 @@ export function Dashboard({
               <div className={styles.recentWorkouts}>
                 <h3 className={styles.sectionTitle}>Recent Workouts</h3>
                 <div className={styles.workoutList}>
-                  {state.workouts.slice(0, 5).map((workout) => (
-                    <div key={workout.date} className={styles.workoutCard}>
-                      <div className={styles.workoutHeader}>
-                        <span className={styles.workoutDate}>{workout.date}</span>
-                        <span className={styles.workoutVolume}>
-                          {(workout.totalVolume / 1000).toFixed(1)}K kg
-                        </span>
-                      </div>
-                      <div className={styles.workoutExercises}>
-                        {workout.exercises.slice(0, 3).map((ex) => (
-                          <span key={ex} className={styles.exerciseTag}>
-                            {ex}
+                  {state.workouts.slice(0, 5).map((workout) => {
+                    const isExpanded = expandedWorkout === workout.date;
+                    return (
+                      <div
+                        key={workout.date}
+                        className={`${styles.workoutCard} ${isExpanded ? styles.expanded : ''}`}
+                        onClick={() => setExpandedWorkout(isExpanded ? null : workout.date)}
+                      >
+                        <div className={styles.workoutHeader}>
+                          <span className={styles.workoutDate}>{workout.date}</span>
+                          <span className={styles.workoutVolume}>
+                            {(workout.totalVolume / 1000).toFixed(1)}K kg
                           </span>
-                        ))}
-                        {workout.exercises.length > 3 && (
-                          <span className={styles.exerciseMore}>
-                            +{workout.exercises.length - 3}
-                          </span>
+                        </div>
+                        <div className={styles.workoutExercises}>
+                          {workout.exercises.slice(0, 3).map((ex) => (
+                            <span key={ex} className={styles.exerciseTag}>
+                              {ex}
+                            </span>
+                          ))}
+                          {workout.exercises.length > 3 && (
+                            <span className={styles.exerciseMore}>
+                              +{workout.exercises.length - 3}
+                            </span>
+                          )}
+                        </div>
+                        {isExpanded && (
+                          <div className={styles.workoutDetails}>
+                            {workout.exercises.map((exercise) => {
+                              const exerciseSets = workout.sets.filter((s) => s.exercise === exercise);
+                              return (
+                                <div key={exercise} className={styles.exerciseGroup}>
+                                  <h4 className={styles.exerciseName}>{exercise}</h4>
+                                  <div className={styles.setsList}>
+                                    {exerciseSets.map((s, i) => (
+                                      <div key={s.id} className={styles.setRow}>
+                                        <span className={styles.setNumber}>Set {i + 1}</span>
+                                        <span className={styles.setDetail}>{s.weight} kg x {s.reps}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
                         )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -195,7 +245,7 @@ export function Dashboard({
         )}
 
         {activeTab === 'meals' && (
-          <Meals dailyLogs={[...state.dailyLogs, ...supabaseMeals]} />
+          <Meals dailyLogs={mergedMealLogs} />
         )}
 
         {activeTab === 'supplements' && (
