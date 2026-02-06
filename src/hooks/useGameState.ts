@@ -160,6 +160,85 @@ export function useGameState() {
     [addNotification]
   );
 
+  const addDailyLog = useCallback(
+    (log: DailyLog) => {
+      setState((prev) => {
+        // Check if log for this date already exists
+        const existingIndex = prev.dailyLogs.findIndex((l) => l.date === log.date);
+        let allLogs: DailyLog[];
+        let isNew = true;
+
+        if (existingIndex >= 0) {
+          // Merge with existing log - only update fields that are filled in
+          const existing = prev.dailyLogs[existingIndex];
+          const merged: DailyLog = {
+            date: log.date,
+            // Sleep - use new value if provided, otherwise keep existing
+            sleepDuration: log.sleepDuration ?? existing.sleepDuration,
+            sleepScore: log.sleepScore ?? existing.sleepScore,
+            wakeTime: log.wakeTime ?? existing.wakeTime,
+            // Meals - use new value if provided (non-empty string), otherwise keep existing
+            meal1: log.meal1 || existing.meal1,
+            meal2: log.meal2 || existing.meal2,
+            meal3: log.meal3 || existing.meal3,
+            snacks: log.snacks || existing.snacks,
+            mealsLogged: 0, // Will recalculate below
+            // Supplements - merge the two records
+            supplements: { ...existing.supplements, ...log.supplements },
+            supplementsTaken: 0, // Will recalculate below
+            supplementsTotal: 0, // Will recalculate below
+          };
+
+          // Recalculate meal count
+          merged.mealsLogged = [merged.meal1, merged.meal2, merged.meal3].filter((m) => m?.trim()).length;
+
+          // Recalculate supplement counts
+          const suppEntries = Object.entries(merged.supplements);
+          merged.supplementsTotal = suppEntries.length;
+          merged.supplementsTaken = suppEntries.filter(([, taken]) => taken).length;
+
+          allLogs = [...prev.dailyLogs];
+          allLogs[existingIndex] = merged;
+          isNew = false;
+        } else {
+          allLogs = [...prev.dailyLogs, log];
+        }
+
+        allLogs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+        let character = { ...prev.character };
+
+        // Only award XP for new logs
+        if (isNew) {
+          const xpFromLog = calculateXpForLogs([log]);
+          character = addXpToCharacter(character, xpFromLog);
+        }
+
+        const { quests, xpEarned } = updateQuestProgress(
+          prev.quests,
+          prev.workouts,
+          allLogs,
+          prev.sets.length
+        );
+        character = addXpToCharacter(character, xpEarned);
+
+        const newState: GameState = {
+          ...prev,
+          character,
+          dailyLogs: allLogs,
+          quests,
+        };
+
+        const { achievements } = checkAchievements(prev.achievements, newState);
+
+        return { ...newState, achievements };
+      });
+
+      addNotification(`Daily log saved!`);
+    },
+    [addNotification]
+  );
+
   const resetProgress = useCallback(() => {
     const freshState = createInitialState();
     freshState.initialized = true;
@@ -173,6 +252,7 @@ export function useGameState() {
     initializeCharacter,
     importSets,
     importLogs,
+    addDailyLog,
     resetProgress,
     addNotification,
   };

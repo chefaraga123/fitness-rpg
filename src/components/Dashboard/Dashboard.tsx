@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { GameState, WorkoutSet, DailyLog } from '../../types';
+import type { GameState, WorkoutSet, DailyLog as DailyLogType } from '../../types';
 import { Character } from '../Character';
 import { Quests } from '../Quests';
 import { Achievements } from '../Achievements';
@@ -8,23 +8,28 @@ import { LifestyleImport } from '../LifestyleImport';
 import { Stats } from '../Stats';
 import { Supplements } from '../Supplements';
 import { Meals } from '../Meals';
+import { DailyLog } from '../DailyLog';
 import styles from './Dashboard.module.css';
 
 interface Props {
   state: GameState;
   notifications: string[];
+  supabaseMeals: DailyLogType[];
   onImportSets: (sets: WorkoutSet[]) => void;
-  onImportLogs: (logs: DailyLog[]) => void;
+  onImportLogs: (logs: DailyLogType[]) => void;
+  onAddDailyLog: (log: DailyLogType) => void;
   onReset: () => void;
 }
 
-type Tab = 'overview' | 'quests' | 'achievements' | 'meals' | 'supplements' | 'charts' | 'import';
+type Tab = 'overview' | 'log' | 'quests' | 'achievements' | 'meals' | 'supplements' | 'charts' | 'import';
 
 export function Dashboard({
   state,
   notifications,
+  supabaseMeals,
   onImportSets,
   onImportLogs,
+  onAddDailyLog,
   onReset,
 }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
@@ -54,6 +59,12 @@ export function Dashboard({
           onClick={() => setActiveTab('overview')}
         >
           Overview
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'log' ? styles.active : ''}`}
+          onClick={() => setActiveTab('log')}
+        >
+          Log
         </button>
         <button
           className={`${styles.tab} ${activeTab === 'quests' ? styles.active : ''}`}
@@ -171,6 +182,15 @@ export function Dashboard({
           </div>
         )}
 
+        {activeTab === 'log' && (
+          <DailyLog
+            existingSets={state.sets}
+            existingLogs={state.dailyLogs}
+            onAddSets={onImportSets}
+            onAddLog={onAddDailyLog}
+          />
+        )}
+
         {activeTab === 'quests' && (
           <Quests quests={state.quests} />
         )}
@@ -180,7 +200,7 @@ export function Dashboard({
         )}
 
         {activeTab === 'meals' && (
-          <Meals dailyLogs={state.dailyLogs} />
+          <Meals dailyLogs={[...state.dailyLogs, ...supabaseMeals]} />
         )}
 
         {activeTab === 'supplements' && (
