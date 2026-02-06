@@ -18,7 +18,6 @@ interface Props {
   onImportSets: (sets: WorkoutSet[]) => void;
   onImportLogs: (logs: DailyLogType[]) => void;
   onAddDailyLog: (log: DailyLogType) => void;
-  onReset: () => void;
 }
 
 type Tab = 'overview' | 'log' | 'quests' | 'achievements' | 'meals' | 'supplements' | 'charts' | 'import';
@@ -30,7 +29,6 @@ export function Dashboard({
   onImportSets,
   onImportLogs,
   onAddDailyLog,
-  onReset,
 }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
 
@@ -38,9 +36,6 @@ export function Dashboard({
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.logo}>Fitness RPG</h1>
-        <button onClick={onReset} className={styles.resetBtn}>
-          Reset
-        </button>
       </header>
 
       <div className={styles.notifications}>

@@ -9,7 +9,7 @@ import type { WorkoutSet } from './types';
 import './App.css';
 
 function App() {
-  const { state, notifications, initializeCharacter, importSets, importLogs, addDailyLog, resetProgress } =
+  const { state, notifications, initializeCharacter, importSets, importLogs, addDailyLog } =
     useGameState();
 
   useSupabaseSync(state.initialized, state.sets, importSets);
@@ -39,7 +39,6 @@ function App() {
       onImportSets={importSetsWithSync}
       onImportLogs={importLogs}
       onAddDailyLog={addDailyLog}
-      onReset={resetProgress}
     />
   );
 }
