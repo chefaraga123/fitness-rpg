@@ -15,6 +15,7 @@ interface Props {
   state: GameState;
   notifications: string[];
   supabaseMeals: DailyLogType[];
+  supabaseSleep: DailyLogType[];
   onImportSets: (sets: WorkoutSet[]) => void;
   onImportLogs: (logs: DailyLogType[]) => void;
   onAddDailyLog: (log: DailyLogType) => void;
@@ -26,6 +27,7 @@ export function Dashboard({
   state,
   notifications,
   supabaseMeals,
+  supabaseSleep,
   onImportSets,
   onImportLogs,
   onAddDailyLog,
@@ -33,9 +35,9 @@ export function Dashboard({
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [expandedWorkout, setExpandedWorkout] = useState<string | null>(null);
 
-  const mergedMealLogs = useMemo(() => {
+  const mergedLogs = useMemo(() => {
     const byDate = new Map<string, DailyLogType>();
-    for (const log of [...state.dailyLogs, ...supabaseMeals]) {
+    for (const log of [...state.dailyLogs, ...supabaseMeals, ...supabaseSleep]) {
       const existing = byDate.get(log.date);
       if (existing) {
         byDate.set(log.date, {
@@ -45,6 +47,9 @@ export function Dashboard({
           meal3: existing.meal3 || log.meal3,
           snacks: existing.snacks || log.snacks,
           mealsLogged: [existing.meal1 || log.meal1, existing.meal2 || log.meal2, existing.meal3 || log.meal3].filter(Boolean).length,
+          sleepDuration: existing.sleepDuration ?? log.sleepDuration,
+          sleepScore: existing.sleepScore ?? log.sleepScore,
+          wakeTime: existing.wakeTime || log.wakeTime,
         });
       } else {
         byDate.set(log.date, { ...log });
@@ -53,7 +58,7 @@ export function Dashboard({
     return Array.from(byDate.values()).sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-  }, [state.dailyLogs, supabaseMeals]);
+  }, [state.dailyLogs, supabaseMeals, supabaseSleep]);
 
   return (
     <div className={styles.container}>
@@ -182,11 +187,11 @@ export function Dashboard({
               </div>
             )}
 
-            {state.dailyLogs.length > 0 && (
+            {mergedLogs.length > 0 && (
               <div className={styles.recentLogs}>
                 <h3 className={styles.sectionTitle}>Recent Days</h3>
                 <div className={styles.logList}>
-                  {state.dailyLogs.slice(0, 5).map((log) => (
+                  {mergedLogs.slice(0, 5).map((log) => (
                     <div key={log.date} className={styles.logCard}>
                       <span className={styles.logDate}>{log.date}</span>
                       <div className={styles.logStats}>
@@ -213,7 +218,7 @@ export function Dashboard({
               </div>
             )}
 
-            {state.workouts.length === 0 && state.dailyLogs.length === 0 && (
+            {state.workouts.length === 0 && mergedLogs.length === 0 && (
               <div className={styles.emptyState}>
                 <p>No data yet. Import your workout or lifestyle data to get started!</p>
                 <button
@@ -245,17 +250,17 @@ export function Dashboard({
         )}
 
         {activeTab === 'meals' && (
-          <Meals dailyLogs={mergedMealLogs} />
+          <Meals dailyLogs={mergedLogs} />
         )}
 
         {activeTab === 'supplements' && (
-          <Supplements dailyLogs={state.dailyLogs} />
+          <Supplements dailyLogs={mergedLogs} />
         )}
 
         {activeTab === 'charts' && (
           <Stats
             workouts={state.workouts}
-            dailyLogs={state.dailyLogs}
+            dailyLogs={mergedLogs}
             sets={state.sets}
           />
         )}
