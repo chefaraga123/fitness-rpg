@@ -19,6 +19,7 @@ interface Props {
   onImportSets: (sets: WorkoutSet[]) => void;
   onImportLogs: (logs: DailyLogType[]) => void;
   onAddDailyLog: (log: DailyLogType) => void;
+  onSignOut: () => void;
 }
 
 type Tab = 'overview' | 'log' | 'quests' | 'achievements' | 'meals' | 'supplements' | 'charts' | 'import';
@@ -31,6 +32,7 @@ export function Dashboard({
   onImportSets,
   onImportLogs,
   onAddDailyLog,
+  onSignOut,
 }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [expandedWorkout, setExpandedWorkout] = useState<string | null>(null);
@@ -64,6 +66,7 @@ export function Dashboard({
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.logo}>Fitness RPG</h1>
+        <button onClick={onSignOut} className={styles.signOutBtn}>Sign Out</button>
       </header>
 
       <div className={styles.notifications}>
