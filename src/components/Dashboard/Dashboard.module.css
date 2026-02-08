@@ -20,6 +20,37 @@
   background-clip: text;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notifBtn {
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.notifBtn:hover {
+  border-color: #fbbf24;
+}
+
+.notifBtn.notifActive {
+  border-color: rgba(74, 222, 128, 0.4);
+  background: rgba(74, 222, 128, 0.1);
+}
+
+.notifBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .signOutBtn {
   padding: 6px 14px;
   background: transparent;

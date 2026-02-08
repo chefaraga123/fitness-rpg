@@ -11,11 +11,20 @@ import { Meals } from '../Meals';
 import { DailyLog } from '../DailyLog';
 import styles from './Dashboard.module.css';
 
+interface PushNotificationsState {
+  supported: boolean;
+  permission: NotificationPermission;
+  subscribed: boolean;
+  subscribe: () => Promise<void>;
+  unsubscribe: () => Promise<void>;
+}
+
 interface Props {
   state: GameState;
   notifications: string[];
   supabaseMeals: DailyLogType[];
   supabaseSleep: DailyLogType[];
+  pushNotifications: PushNotificationsState;
   onImportSets: (sets: WorkoutSet[]) => void;
   onImportLogs: (logs: DailyLogType[]) => void;
   onAddDailyLog: (log: DailyLogType) => void;
@@ -29,6 +38,7 @@ export function Dashboard({
   notifications,
   supabaseMeals,
   supabaseSleep,
+  pushNotifications,
   onImportSets,
   onImportLogs,
   onAddDailyLog,
@@ -66,7 +76,25 @@ export function Dashboard({
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.logo}>Fitness RPG</h1>
-        <button onClick={onSignOut} className={styles.signOutBtn}>Sign Out</button>
+        <div className={styles.headerActions}>
+          {pushNotifications.supported && (
+            <button
+              onClick={pushNotifications.subscribed ? pushNotifications.unsubscribe : pushNotifications.subscribe}
+              className={`${styles.notifBtn} ${pushNotifications.subscribed ? styles.notifActive : ''}`}
+              title={
+                pushNotifications.permission === 'denied'
+                  ? 'Notifications blocked in browser settings'
+                  : pushNotifications.subscribed
+                    ? 'Disable notifications'
+                    : 'Enable notifications'
+              }
+              disabled={pushNotifications.permission === 'denied'}
+            >
+              {pushNotifications.subscribed ? '\u{1F514}' : '\u{1F515}'}
+            </button>
+          )}
+          <button onClick={onSignOut} className={styles.signOutBtn}>Sign Out</button>
+        </div>
       </header>
 
       <div className={styles.notifications}>

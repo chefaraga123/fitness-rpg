@@ -4,6 +4,7 @@ import { useGameState } from './hooks/useGameState';
 import { useSupabaseSync } from './hooks/useSupabaseSync';
 import { useMeals } from './hooks/useMeals';
 import { useSleep } from './hooks/useSleep';
+import { usePushNotifications } from './hooks/usePushNotifications';
 import { insertWorkoutSets } from './lib/fetchWorkouts';
 import { insertMeals } from './lib/fetchMeals';
 import { insertSleep } from './lib/fetchSleep';
@@ -21,6 +22,7 @@ function App() {
   useSupabaseSync(state.initialized, state.sets, importSets);
   const supabaseMeals = useMeals(state.initialized);
   const supabaseSleep = useSleep(state.initialized);
+  const pushNotifications = usePushNotifications(!!session);
 
   const importSetsWithSync = useCallback(
     (sets: WorkoutSet[]) => {
@@ -61,6 +63,7 @@ function App() {
       notifications={notifications}
       supabaseMeals={supabaseMeals}
       supabaseSleep={supabaseSleep}
+      pushNotifications={pushNotifications}
       onImportSets={importSetsWithSync}
       onImportLogs={importLogs}
       onAddDailyLog={addDailyLogWithSync}
