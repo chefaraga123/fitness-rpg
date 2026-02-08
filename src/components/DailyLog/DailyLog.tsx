@@ -9,7 +9,7 @@ interface Props {
   onAddLog: (log: DailyLogType) => void;
 }
 
-type Section = 'workout' | 'lifestyle';
+type Section = 'workout' | 'sleep' | 'meals' | 'supplements';
 
 export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Props) {
   const [activeSection, setActiveSection] = useState<Section>('workout');
@@ -108,146 +108,159 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
     }
   };
 
-  const handleSubmitLifestyle = () => {
+  const handleSubmitSleep = () => {
+    if (!sleepHours && !sleepMinutes && !sleepScore && !wakeTime) {
+      alert('Please fill in at least one sleep field');
+      return;
+    }
     const sleepDuration = sleepHours || sleepMinutes
       ? (parseInt(sleepHours || '0', 10) * 60) + parseInt(sleepMinutes || '0', 10)
       : undefined;
-
-    const supplements: Record<string, boolean> = {};
-    const allSupps = new Set([...knownSupplements, ...selectedSupplements]);
-    allSupps.forEach((supp) => {
-      supplements[supp] = selectedSupplements.has(supp);
-    });
-
-    const mealsLogged = [meal1, meal2, meal3].filter((m) => m.trim()).length;
-    const supplementsTaken = selectedSupplements.size;
-    const supplementsTotal = allSupps.size;
 
     const log: DailyLogType = {
       date: logDate,
       sleepDuration,
       sleepScore: sleepScore ? parseInt(sleepScore, 10) : undefined,
       wakeTime: wakeTime || undefined,
-      meal1: meal1.trim() || undefined,
-      meal2: meal2.trim() || undefined,
-      meal3: meal3.trim() || undefined,
-      snacks: snacks.trim() || undefined,
-      mealsLogged,
-      supplements,
-      supplementsTaken,
-      supplementsTotal,
+      mealsLogged: 0,
+      supplements: {},
+      supplementsTaken: 0,
+      supplementsTotal: 0,
     };
-
     onAddLog(log);
-
-    // Reset form
     setSleepHours('');
     setSleepMinutes('');
     setSleepScore('');
     setWakeTime('');
+    alert('Sleep logged!');
+  };
+
+  const handleSubmitMeals = () => {
+    if (!meal1.trim() && !meal2.trim() && !meal3.trim() && !snacks.trim()) {
+      alert('Please fill in at least one meal');
+      return;
+    }
+    const log: DailyLogType = {
+      date: logDate,
+      meal1: meal1.trim() || undefined,
+      meal2: meal2.trim() || undefined,
+      meal3: meal3.trim() || undefined,
+      snacks: snacks.trim() || undefined,
+      mealsLogged: [meal1, meal2, meal3].filter((m) => m.trim()).length,
+      supplements: {},
+      supplementsTaken: 0,
+      supplementsTotal: 0,
+    };
+    onAddLog(log);
     setMeal1('');
     setMeal2('');
     setMeal3('');
     setSnacks('');
-    setSelectedSupplements(new Set());
+    alert('Meals logged!');
+  };
 
-    alert('Daily log saved!');
+  const handleSubmitSupplements = () => {
+    if (selectedSupplements.size === 0) {
+      alert('Please select at least one supplement');
+      return;
+    }
+    const supplements: Record<string, boolean> = {};
+    const allSupps = new Set([...knownSupplements, ...selectedSupplements]);
+    allSupps.forEach((supp) => {
+      supplements[supp] = selectedSupplements.has(supp);
+    });
+
+    const log: DailyLogType = {
+      date: logDate,
+      mealsLogged: 0,
+      supplements,
+      supplementsTaken: selectedSupplements.size,
+      supplementsTotal: allSupps.size,
+    };
+    onAddLog(log);
+    setSelectedSupplements(new Set());
+    alert('Supplements logged!');
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${activeSection === 'workout' ? styles.active : ''}`}
-          onClick={() => setActiveSection('workout')}
-        >
-          Log Workout
-        </button>
-        <button
-          className={`${styles.tab} ${activeSection === 'lifestyle' ? styles.active : ''}`}
-          onClick={() => setActiveSection('lifestyle')}
-        >
-          Log Day
-        </button>
+        {(['workout', 'sleep', 'meals', 'supplements'] as Section[]).map((section) => (
+          <button
+            key={section}
+            className={`${styles.tab} ${activeSection === section ? styles.active : ''}`}
+            onClick={() => setActiveSection(section)}
+          >
+            {section.charAt(0).toUpperCase() + section.slice(1)}
+          </button>
+        ))}
       </div>
 
-      {activeSection === 'workout' && (
-        <div className={styles.section}>
-          <div className={styles.dateField}>
-            <label>Date</label>
-            <input
-              type="date"
-              value={workoutDate}
-              onChange={(e) => setWorkoutDate(e.target.value)}
-              className={styles.dateInput}
-            />
-          </div>
-
-          <div className={styles.setsSection}>
-            <h4 className={styles.setsTitle}>Sets</h4>
-            {sets.map((set, index) => (
-              <div key={index} className={styles.setRow}>
-                <input
-                  type="text"
-                  placeholder="Exercise"
-                  value={set.exercise}
-                  onChange={(e) => updateSet(index, 'exercise', e.target.value)}
-                  list="exercises"
-                  className={styles.exerciseInput}
-                />
-                <input
-                  type="number"
-                  placeholder="kg"
-                  value={set.weight}
-                  onChange={(e) => updateSet(index, 'weight', e.target.value)}
-                  className={styles.numberInput}
-                />
-                <input
-                  type="number"
-                  placeholder="reps"
-                  value={set.reps}
-                  onChange={(e) => updateSet(index, 'reps', e.target.value)}
-                  className={styles.numberInput}
-                />
-                <button
-                  onClick={() => removeSet(index)}
-                  className={styles.removeBtn}
-                  disabled={sets.length === 1}
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-            <datalist id="exercises">
-              {knownExercises.map((ex) => (
-                <option key={ex} value={ex} />
-              ))}
-            </datalist>
-            <button onClick={addSetRow} className={styles.addSetBtn}>
-              + Add Set
-            </button>
-          </div>
-
-          <button onClick={handleSubmitWorkout} className={styles.submitBtn}>
-            Save Workout
-          </button>
+      <div className={styles.section}>
+        <div className={styles.dateField}>
+          <label>Date</label>
+          <input
+            type="date"
+            value={activeSection === 'workout' ? workoutDate : logDate}
+            onChange={(e) => activeSection === 'workout' ? setWorkoutDate(e.target.value) : setLogDate(e.target.value)}
+            className={styles.dateInput}
+          />
         </div>
-      )}
 
-      {activeSection === 'lifestyle' && (
-        <div className={styles.section}>
-          <div className={styles.dateField}>
-            <label>Date</label>
-            <input
-              type="date"
-              value={logDate}
-              onChange={(e) => setLogDate(e.target.value)}
-              className={styles.dateInput}
-            />
-          </div>
+        {activeSection === 'workout' && (
+          <>
+            <div className={styles.setsSection}>
+              <h4 className={styles.setsTitle}>Sets</h4>
+              {sets.map((set, index) => (
+                <div key={index} className={styles.setRow}>
+                  <input
+                    type="text"
+                    placeholder="Exercise"
+                    value={set.exercise}
+                    onChange={(e) => updateSet(index, 'exercise', e.target.value)}
+                    list="exercises"
+                    className={styles.exerciseInput}
+                  />
+                  <input
+                    type="number"
+                    placeholder="kg"
+                    value={set.weight}
+                    onChange={(e) => updateSet(index, 'weight', e.target.value)}
+                    className={styles.numberInput}
+                  />
+                  <input
+                    type="number"
+                    placeholder="reps"
+                    value={set.reps}
+                    onChange={(e) => updateSet(index, 'reps', e.target.value)}
+                    className={styles.numberInput}
+                  />
+                  <button
+                    onClick={() => removeSet(index)}
+                    className={styles.removeBtn}
+                    disabled={sets.length === 1}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <datalist id="exercises">
+                {knownExercises.map((ex) => (
+                  <option key={ex} value={ex} />
+                ))}
+              </datalist>
+              <button onClick={addSetRow} className={styles.addSetBtn}>
+                + Add Set
+              </button>
+            </div>
+            <button onClick={handleSubmitWorkout} className={styles.submitBtn}>
+              Save Workout
+            </button>
+          </>
+        )}
 
-          <div className={styles.formGroup}>
-            <h4 className={styles.groupTitle}>Sleep</h4>
+        {activeSection === 'sleep' && (
+          <>
             <div className={styles.sleepRow}>
               <div className={styles.sleepDuration}>
                 <input
@@ -288,10 +301,14 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
                 className={styles.timeInput}
               />
             </div>
-          </div>
+            <button onClick={handleSubmitSleep} className={styles.submitBtn}>
+              Save Sleep
+            </button>
+          </>
+        )}
 
-          <div className={styles.formGroup}>
-            <h4 className={styles.groupTitle}>Meals</h4>
+        {activeSection === 'meals' && (
+          <>
             <div className={styles.mealsGrid}>
               <input
                 type="text"
@@ -322,10 +339,14 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
                 className={styles.mealInput}
               />
             </div>
-          </div>
+            <button onClick={handleSubmitMeals} className={styles.submitBtn}>
+              Save Meals
+            </button>
+          </>
+        )}
 
-          <div className={styles.formGroup}>
-            <h4 className={styles.groupTitle}>Supplements</h4>
+        {activeSection === 'supplements' && (
+          <>
             <div className={styles.supplementGrid}>
               {knownSupplements.map((supp) => (
                 <button
@@ -351,13 +372,12 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
                 Add
               </button>
             </div>
-          </div>
-
-          <button onClick={handleSubmitLifestyle} className={styles.submitBtn}>
-            Save Day
-          </button>
-        </div>
-      )}
+            <button onClick={handleSubmitSupplements} className={styles.submitBtn}>
+              Save Supplements
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }

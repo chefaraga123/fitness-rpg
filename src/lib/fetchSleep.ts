@@ -8,6 +8,27 @@ function timeToMinutes(timeStr: string): number {
   return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
 }
 
+function minutesToTime(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`;
+}
+
+export async function insertSleep(log: DailyLog): Promise<void> {
+  if (!supabase) return;
+  if (!log.sleepDuration && !log.sleepScore && !log.wakeTime) return;
+
+  const row: Record<string, unknown> = { date: log.date };
+  if (log.sleepDuration) row.duration_hours = minutesToTime(log.sleepDuration);
+  if (log.sleepScore) row.quality = String(log.sleepScore);
+  if (log.wakeTime) row.wake_time = log.wakeTime;
+
+  const { error } = await supabase.from('sleep').insert(row);
+  if (error) {
+    console.error('Failed to insert sleep to Supabase:', error.message);
+  }
+}
+
 export async function fetchSleep(): Promise<DailyLog[]> {
   if (!supabase) return [];
 

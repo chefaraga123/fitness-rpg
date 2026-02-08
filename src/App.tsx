@@ -4,9 +4,11 @@ import { useSupabaseSync } from './hooks/useSupabaseSync';
 import { useMeals } from './hooks/useMeals';
 import { useSleep } from './hooks/useSleep';
 import { insertWorkoutSets } from './lib/fetchWorkouts';
+import { insertMeals } from './lib/fetchMeals';
+import { insertSleep } from './lib/fetchSleep';
 import { Dashboard } from './components/Dashboard';
 import { WelcomeScreen } from './components/WelcomeScreen';
-import type { WorkoutSet } from './types';
+import type { WorkoutSet, DailyLog } from './types';
 import './App.css';
 
 function App() {
@@ -25,6 +27,15 @@ function App() {
     [importSets]
   );
 
+  const addDailyLogWithSync = useCallback(
+    (log: DailyLog) => {
+      addDailyLog(log);
+      insertSleep(log);
+      insertMeals(log);
+    },
+    [addDailyLog]
+  );
+
   if (!state.initialized) {
     return <div className="loading">Loading...</div>;
   }
@@ -41,7 +52,7 @@ function App() {
       supabaseSleep={supabaseSleep}
       onImportSets={importSetsWithSync}
       onImportLogs={importLogs}
-      onAddDailyLog={addDailyLog}
+      onAddDailyLog={addDailyLogWithSync}
     />
   );
 }

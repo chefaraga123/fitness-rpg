@@ -3,6 +3,23 @@ import type { DailyLog } from '../types';
 
 const PAGE_SIZE = 1000;
 
+export async function insertMeals(log: DailyLog): Promise<void> {
+  if (!supabase) return;
+
+  const rows: Array<{ date: string; meal_type: string; food: string }> = [];
+  if (log.meal1) rows.push({ date: log.date, meal_type: 'Meal 1', food: log.meal1 });
+  if (log.meal2) rows.push({ date: log.date, meal_type: 'Meal 2', food: log.meal2 });
+  if (log.meal3) rows.push({ date: log.date, meal_type: 'Meal 3', food: log.meal3 });
+  if (log.snacks) rows.push({ date: log.date, meal_type: 'Snack', food: log.snacks });
+
+  if (rows.length === 0) return;
+
+  const { error } = await supabase.from('meals').insert(rows);
+  if (error) {
+    console.error('Failed to insert meals to Supabase:', error.message);
+  }
+}
+
 export async function fetchMeals(): Promise<DailyLog[]> {
   if (!supabase) return [];
 
