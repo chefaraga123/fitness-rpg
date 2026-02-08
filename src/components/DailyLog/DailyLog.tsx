@@ -22,10 +22,14 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
 
   // Lifestyle state
   const [logDate, setLogDate] = useState(getTodayDate());
+  const [bedtime, setBedtime] = useState('');
+  const [wakeTime, setWakeTime] = useState('');
   const [sleepHours, setSleepHours] = useState('');
   const [sleepMinutes, setSleepMinutes] = useState('');
   const [sleepScore, setSleepScore] = useState('');
-  const [wakeTime, setWakeTime] = useState('');
+  const [remHours, setRemHours] = useState('');
+  const [remMinutes, setRemMinutes] = useState('');
+  const [sleepNotes, setSleepNotes] = useState('');
   const [meal1, setMeal1] = useState('');
   const [meal2, setMeal2] = useState('');
   const [meal3, setMeal3] = useState('');
@@ -109,29 +113,39 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
   };
 
   const handleSubmitSleep = () => {
-    if (!sleepHours && !sleepMinutes && !sleepScore && !wakeTime) {
+    if (!bedtime && !wakeTime && !sleepHours && !sleepMinutes && !sleepScore && !sleepNotes) {
       alert('Please fill in at least one sleep field');
       return;
     }
     const sleepDuration = sleepHours || sleepMinutes
       ? (parseInt(sleepHours || '0', 10) * 60) + parseInt(sleepMinutes || '0', 10)
       : undefined;
+    const rem = remHours || remMinutes
+      ? (parseInt(remHours || '0', 10) * 60) + parseInt(remMinutes || '0', 10)
+      : undefined;
 
     const log: DailyLogType = {
       date: logDate,
+      bedtime: bedtime || undefined,
+      wakeTime: wakeTime || undefined,
       sleepDuration,
       sleepScore: sleepScore ? parseInt(sleepScore, 10) : undefined,
-      wakeTime: wakeTime || undefined,
+      remMinutes: rem,
+      sleepNotes: sleepNotes.trim() || undefined,
       mealsLogged: 0,
       supplements: {},
       supplementsTaken: 0,
       supplementsTotal: 0,
     };
     onAddLog(log);
+    setBedtime('');
+    setWakeTime('');
     setSleepHours('');
     setSleepMinutes('');
     setSleepScore('');
-    setWakeTime('');
+    setRemHours('');
+    setRemMinutes('');
+    setSleepNotes('');
     alert('Sleep logged!');
   };
 
@@ -261,45 +275,97 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
 
         {activeSection === 'sleep' && (
           <>
-            <div className={styles.sleepRow}>
-              <div className={styles.sleepDuration}>
+            <div className={styles.sleepFields}>
+              <div className={styles.sleepFieldRow}>
+                <label className={styles.sleepLabel}>Bedtime</label>
                 <input
-                  type="number"
-                  placeholder="hrs"
-                  value={sleepHours}
-                  onChange={(e) => setSleepHours(e.target.value)}
-                  className={styles.smallInput}
-                  min="0"
-                  max="24"
+                  type="time"
+                  value={bedtime}
+                  onChange={(e) => setBedtime(e.target.value)}
+                  className={styles.timeInput}
                 />
-                <span>h</span>
-                <input
-                  type="number"
-                  placeholder="min"
-                  value={sleepMinutes}
-                  onChange={(e) => setSleepMinutes(e.target.value)}
-                  className={styles.smallInput}
-                  min="0"
-                  max="59"
-                />
-                <span>m</span>
               </div>
-              <input
-                type="number"
-                placeholder="Score (0-100)"
-                value={sleepScore}
-                onChange={(e) => setSleepScore(e.target.value)}
-                className={styles.scoreInput}
-                min="0"
-                max="100"
-              />
-              <input
-                type="time"
-                placeholder="Wake time"
-                value={wakeTime}
-                onChange={(e) => setWakeTime(e.target.value)}
-                className={styles.timeInput}
-              />
+              <div className={styles.sleepFieldRow}>
+                <label className={styles.sleepLabel}>Wake time</label>
+                <input
+                  type="time"
+                  value={wakeTime}
+                  onChange={(e) => setWakeTime(e.target.value)}
+                  className={styles.timeInput}
+                />
+              </div>
+              <div className={styles.sleepFieldRow}>
+                <label className={styles.sleepLabel}>Duration</label>
+                <div className={styles.sleepDuration}>
+                  <input
+                    type="number"
+                    placeholder="hrs"
+                    value={sleepHours}
+                    onChange={(e) => setSleepHours(e.target.value)}
+                    className={styles.smallInput}
+                    min="0"
+                    max="24"
+                  />
+                  <span>h</span>
+                  <input
+                    type="number"
+                    placeholder="min"
+                    value={sleepMinutes}
+                    onChange={(e) => setSleepMinutes(e.target.value)}
+                    className={styles.smallInput}
+                    min="0"
+                    max="59"
+                  />
+                  <span>m</span>
+                </div>
+              </div>
+              <div className={styles.sleepFieldRow}>
+                <label className={styles.sleepLabel}>Quality</label>
+                <input
+                  type="number"
+                  placeholder="0-100"
+                  value={sleepScore}
+                  onChange={(e) => setSleepScore(e.target.value)}
+                  className={styles.scoreInput}
+                  min="0"
+                  max="100"
+                />
+              </div>
+              <div className={styles.sleepFieldRow}>
+                <label className={styles.sleepLabel}>REM</label>
+                <div className={styles.sleepDuration}>
+                  <input
+                    type="number"
+                    placeholder="hrs"
+                    value={remHours}
+                    onChange={(e) => setRemHours(e.target.value)}
+                    className={styles.smallInput}
+                    min="0"
+                    max="24"
+                  />
+                  <span>h</span>
+                  <input
+                    type="number"
+                    placeholder="min"
+                    value={remMinutes}
+                    onChange={(e) => setRemMinutes(e.target.value)}
+                    className={styles.smallInput}
+                    min="0"
+                    max="59"
+                  />
+                  <span>m</span>
+                </div>
+              </div>
+              <div className={styles.sleepFieldRow}>
+                <label className={styles.sleepLabel}>Notes</label>
+                <input
+                  type="text"
+                  placeholder="Any notes..."
+                  value={sleepNotes}
+                  onChange={(e) => setSleepNotes(e.target.value)}
+                  className={styles.notesInput}
+                />
+              </div>
             </div>
             <button onClick={handleSubmitSleep} className={styles.submitBtn}>
               Save Sleep

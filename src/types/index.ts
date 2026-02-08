@@ -27,9 +27,12 @@ export interface Workout {
 export interface DailyLog {
   date: string;
   // Sleep
+  bedtime?: string;
+  wakeTime?: string;
   sleepDuration?: number; // in minutes
   sleepScore?: number;
-  wakeTime?: string;
+  remMinutes?: number;
+  sleepNotes?: string;
   // Meals
   meal1?: string;
   meal2?: string;

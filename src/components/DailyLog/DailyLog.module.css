@@ -164,6 +164,40 @@
   gap: 10px;
 }
 
+.sleepFields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sleepFieldRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sleepLabel {
+  width: 70px;
+  font-size: 0.85rem;
+  color: #888;
+  flex-shrink: 0;
+}
+
+.notesInput {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.notesInput:focus {
+  outline: none;
+  border-color: #60a5fa;
+}
+
 .sleepRow {
   display: flex;
   gap: 12px;
