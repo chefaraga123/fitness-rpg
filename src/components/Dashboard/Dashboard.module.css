@@ -335,3 +335,40 @@
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 20px;
 }
+
+@media (max-width: 600px) {
+  .container {
+    padding: 12px;
+  }
+
+  .logo {
+    font-size: 1.3rem;
+  }
+
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+
+  .importGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .logCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}

@@ -80,3 +80,30 @@
   text-transform: uppercase;
   letter-spacing: 1px;
 }
+
+@media (max-width: 600px) {
+  .container {
+    padding: 16px;
+  }
+
+  .name {
+    font-size: 1.2rem;
+  }
+
+  .stats {
+    gap: 8px;
+  }
+
+  .stat {
+    padding: 8px;
+  }
+
+  .statValue {
+    font-size: 1.3rem;
+  }
+
+  .statLabel {
+    font-size: 0.65rem;
+    letter-spacing: 0.5px;
+  }
+}
