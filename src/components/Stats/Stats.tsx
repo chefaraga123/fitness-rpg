@@ -338,7 +338,8 @@ export function Stats({ workouts, dailyLogs, sets }: Props) {
                           <Tooltip
                             contentStyle={{ background: '#1a1a2e', border: '1px solid #333' }}
                             labelStyle={{ color: '#fff' }}
-                            formatter={(value: number) => {
+                            formatter={(value: number | undefined) => {
+                              if (value == null) return ['', ''];
                               const h = Math.floor(value);
                               const m = String(Math.round((value % 1) * 60)).padStart(2, '0');
                               return [`${h}:${m}`, ''];
