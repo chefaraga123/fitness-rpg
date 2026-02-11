@@ -4,6 +4,8 @@ import {
   Line,
   BarChart,
   Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -12,6 +14,8 @@ import {
   Legend,
 } from 'recharts';
 import type { Workout, DailyLog, WorkoutSet } from '../../types';
+import { ActivityHeatmap } from './ActivityHeatmap';
+import { SupplementCalendar } from './SupplementCalendar';
 import styles from './Stats.module.css';
 
 interface Props {
@@ -21,7 +25,7 @@ interface Props {
 }
 
 type TimeRange = '7d' | '30d' | '90d' | 'all';
-type Tab = 'workouts' | 'sleep' | 'exercises';
+type Tab = 'activity' | 'workouts' | 'sleep' | 'exercises' | 'supplements';
 
 export function Stats({ workouts, dailyLogs, sets }: Props) {
   const [timeRange, setTimeRange] = useState<TimeRange>('30d');
@@ -93,16 +97,39 @@ export function Stats({ workouts, dailyLogs, sets }: Props) {
       .filter((l) => l.sleepDuration || l.sleepScore || l.wakeTime)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    const points = sorted.map((l) => ({
-      date: formatDate(l.date),
-      hours: l.sleepDuration ? +(l.sleepDuration / 60).toFixed(1) : null,
-      score: l.sleepScore || null,
-      wakeHour: l.wakeTime ? timeToDecimal(l.wakeTime) : null,
-      wakeTime: l.wakeTime || null,
-      avgHours: null as number | null,
-      avgScore: null as number | null,
-      avgWake: null as number | null,
-    }));
+    const points = sorted.map((l) => {
+      const wakeHour = l.wakeTime ? timeToDecimal(l.wakeTime) : null;
+      // Bedtime decimal: hours < 12 get +24 (e.g., 1:00 AM → 25.0)
+      let bedtimeDecimal: number | null = null;
+      if (l.bedtime) {
+        const raw = timeToDecimal(l.bedtime);
+        bedtimeDecimal = raw < 12 ? raw + 24 : raw;
+      }
+      // Wake decimal for band chart (same midnight-wrap logic)
+      let wakeDecimal: number | null = null;
+      if (wakeHour != null) {
+        wakeDecimal = wakeHour < 12 ? wakeHour + 24 : wakeHour;
+      }
+      // Sleep window = wake - bedtime (for stacked area chart)
+      let sleepWindow: number | null = null;
+      if (bedtimeDecimal != null && wakeDecimal != null) {
+        sleepWindow = wakeDecimal - bedtimeDecimal;
+        if (sleepWindow < 0) sleepWindow += 24;
+      }
+      return {
+        date: formatDate(l.date),
+        hours: l.sleepDuration ? +(l.sleepDuration / 60).toFixed(1) : null,
+        score: l.sleepScore || null,
+        wakeHour,
+        wakeTime: l.wakeTime || null,
+        bedtime: l.bedtime || null,
+        bedtimeDecimal,
+        sleepWindow,
+        avgHours: null as number | null,
+        avgScore: null as number | null,
+        avgWake: null as number | null,
+      };
+    });
 
     // Compute 7-day moving averages
     for (let i = 0; i < points.length; i++) {
@@ -179,6 +206,12 @@ export function Stats({ workouts, dailyLogs, sets }: Props) {
 
       <div className={styles.tabs}>
         <button
+          className={`${styles.tab} ${activeTab === 'activity' ? styles.active : ''}`}
+          onClick={() => setActiveTab('activity')}
+        >
+          Activity
+        </button>
+        <button
           className={`${styles.tab} ${activeTab === 'workouts' ? styles.active : ''}`}
           onClick={() => setActiveTab('workouts')}
         >
@@ -196,9 +229,23 @@ export function Stats({ workouts, dailyLogs, sets }: Props) {
         >
           Exercises
         </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'supplements' ? styles.active : ''}`}
+          onClick={() => setActiveTab('supplements')}
+        >
+          Supplements
+        </button>
       </div>
 
       <div className={styles.chartArea}>
+        {activeTab === 'activity' && (
+          <ActivityHeatmap
+            workouts={filteredWorkouts}
+            dailyLogs={filteredLogs}
+            timeRange={timeRange}
+          />
+        )}
+
         {activeTab === 'workouts' && (
           <>
             {weeklyVolumeData.length > 1 ? (
@@ -370,6 +417,60 @@ export function Stats({ workouts, dailyLogs, sets }: Props) {
                     </div>
                   </>
                 )}
+
+                {sleepData.filter((d) => d.bedtimeDecimal != null && d.sleepWindow != null).length >= 2 && (
+                  <>
+                    <h4 className={styles.chartTitle}>Sleep Schedule</h4>
+                    <div className={styles.chart}>
+                      <ResponsiveContainer width="100%" height={250}>
+                        <AreaChart data={sleepData.filter((d) => d.bedtimeDecimal != null && d.sleepWindow != null)}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                          <XAxis dataKey="date" stroke="#888" fontSize={12} />
+                          <YAxis
+                            stroke="#888"
+                            fontSize={12}
+                            reversed
+                            domain={[20, 32]}
+                            tickFormatter={(v: number) => {
+                              const h = v >= 24 ? v - 24 : v;
+                              return `${Math.floor(h)}:${String(Math.round((h % 1) * 60)).padStart(2, '0')}`;
+                            }}
+                          />
+                          <Tooltip
+                            contentStyle={{ background: '#1a1a2e', border: '1px solid #333' }}
+                            labelStyle={{ color: '#fff' }}
+                            formatter={// eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            ((_value: any, name: any, props: any) => {
+                              if (name === 'bedtimeDecimal') return [null, null];
+                              const bed = props?.payload?.bedtime || '?';
+                              const wake = props?.payload?.wakeTime || '?';
+                              return [`Bed: ${bed}, Wake: ${wake}`, 'Sleep'];
+                            }) as never}
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="bedtimeDecimal"
+                            stackId="sleep"
+                            stroke="none"
+                            fill="transparent"
+                            connectNulls
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="sleepWindow"
+                            stackId="sleep"
+                            stroke="#a78bfa"
+                            strokeWidth={1}
+                            fill="#a78bfa"
+                            fillOpacity={0.3}
+                            connectNulls
+                            name="Sleep window"
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </>
+                )}
               </>
             ) : (
               <p className={styles.noData}>Not enough sleep data for charts</p>
@@ -441,6 +542,10 @@ export function Stats({ workouts, dailyLogs, sets }: Props) {
               <p className={styles.noData}>Select an exercise to see progression</p>
             )}
           </>
+        )}
+
+        {activeTab === 'supplements' && (
+          <SupplementCalendar dailyLogs={dailyLogs} />
         )}
       </div>
     </div>

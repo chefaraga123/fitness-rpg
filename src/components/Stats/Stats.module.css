@@ -60,6 +60,12 @@
   margin-bottom: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tab {
@@ -147,4 +153,148 @@
 
 :global(.recharts-legend-item-text) {
   color: #aaa !important;
+}
+
+/* Activity Heatmap */
+.heatmapContainer {
+  margin-bottom: 16px;
+}
+
+.heatmapGrid {
+  display: grid;
+  grid-template-rows: auto repeat(7, 1fr);
+  gap: 2px;
+  width: max-content;
+  min-width: 100%;
+}
+
+.heatmapCell {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.heatmapDayLabel {
+  font-size: 0.65rem;
+  color: #888;
+  display: flex;
+  align-items: center;
+  height: 12px;
+  width: 28px;
+}
+
+.heatmapMonthLabel {
+  font-size: 0.65rem;
+  color: #888;
+  text-align: center;
+  height: 16px;
+}
+
+.heatmapLegend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 0.7rem;
+  color: #888;
+}
+
+/* Supplement Calendar */
+.calendarContainer {
+  margin-bottom: 16px;
+}
+
+.calendarNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  color: #e8e8e8;
+}
+
+.calendarNavBtn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #e8e8e8;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.calendarNavBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+.calendarDayHeader {
+  font-size: 0.7rem;
+  color: #888;
+  text-align: center;
+  padding-bottom: 4px;
+}
+
+.calendarCell {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #aaa;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.calendarCell.full {
+  background: rgba(74, 222, 128, 0.3);
+  color: #fff;
+}
+
+.calendarCell.partial {
+  background: rgba(251, 191, 36, 0.3);
+  color: #fff;
+}
+
+.calendarCell.missed {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fff;
+}
+
+.calendarSummary {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+/* Mobile breakpoint */
+@media (max-width: 600px) {
+  .heatmapCell {
+    width: 10px;
+    height: 10px;
+  }
+
+  .calendarGrid {
+    max-width: 280px;
+  }
+
+  .calendarCell {
+    font-size: 0.65rem;
+  }
+
+  .tab {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
 }
