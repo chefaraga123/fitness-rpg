@@ -229,7 +229,7 @@ export function checkAchievements(
   return { achievements: updatedAchievements, newlyUnlocked };
 }
 
-function calculateLogStreak(
+export function calculateLogStreak(
   logs: DailyLog[],
   predicate: (log: DailyLog) => boolean
 ): number {

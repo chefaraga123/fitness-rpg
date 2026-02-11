@@ -7,6 +7,7 @@ import { DataImport } from '../DataImport';
 import { LifestyleImport } from '../LifestyleImport';
 import { Stats } from '../Stats';
 import { Supplements } from '../Supplements';
+import { Insights } from '../Insights';
 import { Meals } from '../Meals';
 import { DailyLog } from '../DailyLog';
 import styles from './Dashboard.module.css';
@@ -32,7 +33,7 @@ interface Props {
   onSignOut: () => void;
 }
 
-type Tab = 'overview' | 'log' | 'quests' | 'achievements' | 'meals' | 'supplements' | 'charts' | 'import';
+type Tab = 'overview' | 'log' | 'quests' | 'achievements' | 'meals' | 'supplements' | 'insights' | 'charts' | 'import';
 
 export function Dashboard({
   state,
@@ -150,6 +151,12 @@ export function Dashboard({
           onClick={() => setActiveTab('supplements')}
         >
           Supplements
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'insights' ? styles.active : ''}`}
+          onClick={() => setActiveTab('insights')}
+        >
+          Insights
         </button>
         <button
           className={`${styles.tab} ${activeTab === 'charts' ? styles.active : ''}`}
@@ -294,6 +301,10 @@ export function Dashboard({
 
         {activeTab === 'supplements' && (
           <Supplements dailyLogs={mergedLogs} />
+        )}
+
+        {activeTab === 'insights' && (
+          <Insights workouts={state.workouts} dailyLogs={mergedLogs} />
         )}
 
         {activeTab === 'charts' && (

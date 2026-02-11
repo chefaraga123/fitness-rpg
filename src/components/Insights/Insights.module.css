@@ -1,0 +1,183 @@
+.container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  padding: 24px;
+  color: #e8e8e8;
+  border: 1px solid #0f3460;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #ffd700;
+}
+
+.timeRangeSelector {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.rangeBtn {
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  color: #888;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.rangeBtn:hover {
+  color: #ccc;
+}
+
+.rangeBtn.active {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+}
+
+.section {
+  margin-bottom: 28px;
+}
+
+.sectionTitle {
+  margin: 0 0 14px 0;
+  font-size: 1rem;
+  color: #a78bfa;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cardLabel {
+  font-size: 0.75rem;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.cardValue {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.cardChange {
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.up {
+  color: #4ade80;
+}
+
+.down {
+  color: #ef4444;
+}
+
+.flat {
+  color: #888;
+}
+
+.streakValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffd700;
+}
+
+.streakLabel {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 4px;
+}
+
+.correlationCard {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 12px;
+}
+
+.correlationTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.correlationRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 0.85rem;
+}
+
+.correlationLabel {
+  color: #aaa;
+}
+
+.correlationValue {
+  font-weight: 600;
+  color: #fff;
+}
+
+.insufficientData {
+  color: #666;
+  font-style: italic;
+  font-size: 0.85rem;
+  padding: 8px 0;
+}
+
+.metricValue {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.metricLabel {
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 16px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
