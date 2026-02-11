@@ -218,38 +218,39 @@ export function Dashboard({
               </div>
             )}
 
-            {mergedLogs.length > 0 && (
-              <div className={styles.recentLogs}>
-                <h3 className={styles.sectionTitle}>Recent Days</h3>
-                <div className={styles.logList}>
-                  {mergedLogs.slice(0, 5).map((log) => (
-                    <div key={log.date} className={styles.logCard}>
-                      <span className={styles.logDate}>{log.date}</span>
-                      <div className={styles.logStats}>
-                        {log.sleepDuration && (
-                          <span className={styles.logSleep}>
-                            {Math.floor(log.sleepDuration / 60)}h {log.sleepDuration % 60}m
-                          </span>
-                        )}
-                        {log.sleepScore && (
-                          <span className={styles.logScore}>{log.sleepScore}</span>
-                        )}
-                        {log.mealsLogged > 0 && (
-                          <span className={styles.logMeals}>{log.mealsLogged} meals</span>
-                        )}
-                        {log.supplementsTaken > 0 && (
-                          <span className={styles.logSupps}>
-                            {log.supplementsTaken}/{log.supplementsTotal}
-                          </span>
-                        )}
+            {mergedLogs.some((log) => log.sleepDuration || log.sleepScore) && (
+              <div className={styles.recentSleep}>
+                <h3 className={styles.sectionTitle}>Recent Sleeps</h3>
+                <div className={styles.sleepList}>
+                  {mergedLogs
+                    .filter((log) => log.sleepDuration || log.sleepScore)
+                    .slice(0, 5)
+                    .map((log) => (
+                      <div key={log.date} className={styles.sleepCard}>
+                        <span className={styles.sleepDate}>{log.date}</span>
+                        <div className={styles.sleepStats}>
+                          {log.sleepDuration != null && (
+                            <span className={styles.sleepDuration}>
+                              {Math.floor(log.sleepDuration / 60)}h {log.sleepDuration % 60}m
+                            </span>
+                          )}
+                          {log.sleepScore != null && (
+                            <span className={styles.sleepScore}>Score: {log.sleepScore}</span>
+                          )}
+                          {log.bedtime && (
+                            <span className={styles.sleepTime}>Bed: {log.bedtime}</span>
+                          )}
+                          {log.wakeTime && (
+                            <span className={styles.sleepTime}>Wake: {log.wakeTime}</span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             )}
 
-            {state.workouts.length === 0 && mergedLogs.length === 0 && (
+            {state.workouts.length === 0 && !mergedLogs.some((log) => log.sleepDuration || log.sleepScore) && (
               <div className={styles.emptyState}>
                 <p>No data yet. Import your workout or lifestyle data to get started!</p>
                 <button

@@ -151,8 +151,8 @@
 }
 
 .overviewGrid {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
 
@@ -170,12 +170,12 @@
   content: '🏋️';
 }
 
-.recentLogs .sectionTitle::before {
-  content: '📊';
+.recentSleep .sectionTitle::before {
+  content: '😴';
 }
 
 .recentWorkouts,
-.recentLogs {
+.recentSleep {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   border-radius: 12px;
   padding: 20px;
@@ -288,13 +288,13 @@
   font-weight: 500;
 }
 
-.logList {
+.sleepList {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.logCard {
+.sleepCard {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -303,35 +303,32 @@
   border-radius: 6px;
 }
 
-.logDate {
+.sleepDate {
   color: #888;
   font-size: 0.85rem;
 }
 
-.logStats {
+.sleepStats {
   display: flex;
   gap: 10px;
   font-size: 0.8rem;
 }
 
-.logSleep {
+.sleepDuration {
   color: #60a5fa;
 }
 
-.logScore {
+.sleepScore {
   color: #4ade80;
   font-weight: 500;
 }
 
-.logMeals {
-  color: #fbbf24;
-}
-
-.logSupps {
+.sleepTime {
   color: #a78bfa;
 }
 
 .emptyState {
+  grid-column: 1 / -1;
   text-align: center;
   padding: 60px 20px;
   color: #666;
@@ -393,11 +390,15 @@
     flex: 0 0 auto;
   }
 
+  .overviewGrid {
+    grid-template-columns: 1fr;
+  }
+
   .importGrid {
     grid-template-columns: 1fr;
   }
 
-  .logCard {
+  .sleepCard {
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
