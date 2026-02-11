@@ -24,6 +24,7 @@ interface Props {
   notifications: string[];
   supabaseMeals: DailyLogType[];
   supabaseSleep: DailyLogType[];
+  supabaseSupplements: DailyLogType[];
   pushNotifications: PushNotificationsState;
   onImportSets: (sets: WorkoutSet[]) => void;
   onImportLogs: (logs: DailyLogType[]) => void;
@@ -38,6 +39,7 @@ export function Dashboard({
   notifications,
   supabaseMeals,
   supabaseSleep,
+  supabaseSupplements,
   pushNotifications,
   onImportSets,
   onImportLogs,
@@ -49,9 +51,11 @@ export function Dashboard({
 
   const mergedLogs = useMemo(() => {
     const byDate = new Map<string, DailyLogType>();
-    for (const log of [...state.dailyLogs, ...supabaseMeals, ...supabaseSleep]) {
+    for (const log of [...state.dailyLogs, ...supabaseMeals, ...supabaseSleep, ...supabaseSupplements]) {
       const existing = byDate.get(log.date);
       if (existing) {
+        const mergedSupplements = { ...existing.supplements, ...log.supplements };
+        const supplementsTaken = Object.values(mergedSupplements).filter(Boolean).length;
         byDate.set(log.date, {
           ...existing,
           meal1: existing.meal1 || log.meal1,
@@ -62,6 +66,9 @@ export function Dashboard({
           sleepDuration: existing.sleepDuration ?? log.sleepDuration,
           sleepScore: existing.sleepScore ?? log.sleepScore,
           wakeTime: existing.wakeTime || log.wakeTime,
+          supplements: mergedSupplements,
+          supplementsTaken,
+          supplementsTotal: Object.keys(mergedSupplements).length,
         });
       } else {
         byDate.set(log.date, { ...log });
@@ -70,7 +77,7 @@ export function Dashboard({
     return Array.from(byDate.values()).sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-  }, [state.dailyLogs, supabaseMeals, supabaseSleep]);
+  }, [state.dailyLogs, supabaseMeals, supabaseSleep, supabaseSupplements]);
 
   return (
     <div className={styles.container}>
