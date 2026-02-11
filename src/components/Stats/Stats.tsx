@@ -87,16 +87,35 @@ export function Stats({ workouts, dailyLogs, sets }: Props) {
       }));
   }, [filteredWorkouts]);
 
-  // Sleep data
+  // Sleep data with 7-day moving averages
   const sleepData = useMemo(() => {
-    return filteredLogs
-      .filter((l) => l.sleepDuration || l.sleepScore)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .map((l) => ({
-        date: formatDate(l.date),
-        hours: l.sleepDuration ? +(l.sleepDuration / 60).toFixed(1) : null,
-        score: l.sleepScore || null,
-      }));
+    const sorted = filteredLogs
+      .filter((l) => l.sleepDuration || l.sleepScore || l.wakeTime)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const points = sorted.map((l) => ({
+      date: formatDate(l.date),
+      hours: l.sleepDuration ? +(l.sleepDuration / 60).toFixed(1) : null,
+      score: l.sleepScore || null,
+      wakeHour: l.wakeTime ? timeToDecimal(l.wakeTime) : null,
+      wakeTime: l.wakeTime || null,
+      avgHours: null as number | null,
+      avgScore: null as number | null,
+      avgWake: null as number | null,
+    }));
+
+    // Compute 7-day moving averages
+    for (let i = 0; i < points.length; i++) {
+      const window = points.slice(Math.max(0, i - 6), i + 1);
+      const hoursVals = window.map((p) => p.hours).filter((v): v is number => v != null);
+      const scoreVals = window.map((p) => p.score).filter((v): v is number => v != null);
+      const wakeVals = window.map((p) => p.wakeHour).filter((v): v is number => v != null);
+      if (hoursVals.length >= 2) points[i].avgHours = +(hoursVals.reduce((a, b) => a + b, 0) / hoursVals.length).toFixed(1);
+      if (scoreVals.length >= 2) points[i].avgScore = +(scoreVals.reduce((a, b) => a + b, 0) / scoreVals.length).toFixed(0);
+      if (wakeVals.length >= 2) points[i].avgWake = +(wakeVals.reduce((a, b) => a + b, 0) / wakeVals.length).toFixed(2);
+    }
+
+    return points;
   }, [filteredLogs]);
 
   // Exercise progression data
@@ -239,6 +258,7 @@ export function Stats({ workouts, dailyLogs, sets }: Props) {
                         contentStyle={{ background: '#1a1a2e', border: '1px solid #333' }}
                         labelStyle={{ color: '#fff' }}
                       />
+                      <Legend />
                       <Line
                         type="monotone"
                         dataKey="hours"
@@ -246,6 +266,17 @@ export function Stats({ workouts, dailyLogs, sets }: Props) {
                         strokeWidth={2}
                         dot={{ fill: '#60a5fa', r: 3 }}
                         connectNulls
+                        name="Duration"
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="avgHours"
+                        stroke="#fbbf24"
+                        strokeWidth={2}
+                        dot={false}
+                        connectNulls
+                        strokeDasharray="5 5"
+                        name="7-day avg"
                       />
                     </LineChart>
                   </ResponsiveContainer>
@@ -264,6 +295,7 @@ export function Stats({ workouts, dailyLogs, sets }: Props) {
                             contentStyle={{ background: '#1a1a2e', border: '1px solid #333' }}
                             labelStyle={{ color: '#fff' }}
                           />
+                          <Legend />
                           <Line
                             type="monotone"
                             dataKey="score"
@@ -271,6 +303,66 @@ export function Stats({ workouts, dailyLogs, sets }: Props) {
                             strokeWidth={2}
                             dot={{ fill: '#a78bfa', r: 3 }}
                             connectNulls
+                            name="Score"
+                          />
+                          <Line
+                            type="monotone"
+                            dataKey="avgScore"
+                            stroke="#fbbf24"
+                            strokeWidth={2}
+                            dot={false}
+                            connectNulls
+                            strokeDasharray="5 5"
+                            name="7-day avg"
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </>
+                )}
+
+                {sleepData.some((d) => d.wakeHour) && (
+                  <>
+                    <h4 className={styles.chartTitle}>Wake-up Time</h4>
+                    <div className={styles.chart}>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <LineChart data={sleepData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                          <XAxis dataKey="date" stroke="#888" fontSize={12} />
+                          <YAxis
+                            stroke="#888"
+                            fontSize={12}
+                            domain={[5, 11]}
+                            tickFormatter={(v: number) => `${Math.floor(v)}:${String(Math.round((v % 1) * 60)).padStart(2, '0')}`}
+                          />
+                          <Tooltip
+                            contentStyle={{ background: '#1a1a2e', border: '1px solid #333' }}
+                            labelStyle={{ color: '#fff' }}
+                            formatter={(value: number) => {
+                              const h = Math.floor(value);
+                              const m = String(Math.round((value % 1) * 60)).padStart(2, '0');
+                              return [`${h}:${m}`, ''];
+                            }}
+                          />
+                          <Legend />
+                          <Line
+                            type="monotone"
+                            dataKey="wakeHour"
+                            stroke="#4ade80"
+                            strokeWidth={2}
+                            dot={{ fill: '#4ade80', r: 3 }}
+                            connectNulls
+                            name="Wake time"
+                          />
+                          <Line
+                            type="monotone"
+                            dataKey="avgWake"
+                            stroke="#fbbf24"
+                            strokeWidth={2}
+                            dot={false}
+                            connectNulls
+                            strokeDasharray="5 5"
+                            name="7-day avg"
                           />
                         </LineChart>
                       </ResponsiveContainer>
@@ -360,6 +452,11 @@ function formatDate(dateStr: string): string {
   const month = date.getMonth() + 1;
   const year = date.getFullYear().toString().slice(-2);
   return `${day}/${month}/${year}`;
+}
+
+function timeToDecimal(time: string): number {
+  const [h, m] = time.split(':').map(Number);
+  return h + m / 60;
 }
 
 function getWeekStart(date: Date): Date {
