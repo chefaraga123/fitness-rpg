@@ -5,11 +5,14 @@ export async function upsertPushSubscription(
 ): Promise<void> {
   if (!supabase) return;
 
+  const json = subscription.toJSON();
+  const endpoint = json.endpoint;
+
   const { error } = await supabase
     .from('push_subscriptions')
     .upsert(
-      { subscription: subscription.toJSON() },
-      { onConflict: 'user_id' }
+      { endpoint, subscription: json },
+      { onConflict: 'user_id,endpoint' }
     );
 
   if (error) {
@@ -20,13 +23,14 @@ export async function upsertPushSubscription(
 export async function deletePushSubscription(): Promise<void> {
   if (!supabase) return;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription();
+  if (!sub) return;
 
   const { error } = await supabase
     .from('push_subscriptions')
     .delete()
-    .eq('user_id', user.id);
+    .eq('endpoint', sub.endpoint);
 
   if (error) {
     console.error('Failed to delete push subscription:', error.message);
