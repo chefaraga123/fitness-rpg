@@ -18,10 +18,10 @@ import './App.css';
 
 function App() {
   const { session, loading: authLoading, signIn, signOut } = useAuth();
-  const { state, notifications, initializeCharacter, importSets, importLogs, addDailyLog, renameExercises } =
+  const { state, notifications, initializeCharacter, importSets, replaceSets, importLogs, addDailyLog, renameExercises } =
     useGameState();
 
-  useSupabaseSync(state.initialized, state.sets, importSets);
+  useSupabaseSync(state.initialized, replaceSets);
   const supabaseMeals = useMeals(state.initialized);
   const supabaseSleep = useSleep(state.initialized);
   const supabaseSupplements = useSupplements(state.initialized);

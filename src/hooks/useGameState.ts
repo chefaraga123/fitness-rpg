@@ -239,6 +239,25 @@ export function useGameState() {
     [addNotification]
   );
 
+  const replaceSets = useCallback((sets: WorkoutSet[]) => {
+    setState((prev) => {
+      const workouts = groupSetsIntoWorkouts(sets);
+      const totalVolume = sets.reduce((sum, s) => sum + s.weight * s.reps, 0);
+
+      return {
+        ...prev,
+        sets,
+        workouts,
+        character: {
+          ...prev.character,
+          totalWorkouts: workouts.length,
+          totalSets: sets.length,
+          totalWeight: totalVolume,
+        },
+      };
+    });
+  }, []);
+
   const renameExercises = useCallback(
     (oldNames: string[], newName: string) => {
       setState((prev) => {
@@ -272,6 +291,7 @@ export function useGameState() {
     notifications,
     initializeCharacter,
     importSets,
+    replaceSets,
     importLogs,
     addDailyLog,
     renameExercises,

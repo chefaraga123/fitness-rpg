@@ -4,8 +4,7 @@ import type { WorkoutSet } from '../types';
 
 export function useSupabaseSync(
   initialized: boolean,
-  existingSets: WorkoutSet[],
-  onNewSets: (sets: WorkoutSet[]) => void
+  onReplaceSets: (sets: WorkoutSet[]) => void
 ) {
   const hasSynced = useRef(false);
 
@@ -17,17 +16,7 @@ export function useSupabaseSync(
       const remoteSets = await fetchWorkoutSets();
       if (remoteSets.length === 0) return;
 
-      const existingKeys = new Set(
-        existingSets.map((s) => `${s.date}-${s.exercise}-${s.weight}-${s.reps}`)
-      );
-
-      const newSets = remoteSets.filter(
-        (s) => !existingKeys.has(`${s.date}-${s.exercise}-${s.weight}-${s.reps}`)
-      );
-
-      if (newSets.length > 0) {
-        onNewSets(newSets);
-      }
+      onReplaceSets(remoteSets);
     })();
   }, [initialized]);
 }
