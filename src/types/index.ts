@@ -39,8 +39,8 @@ export interface DailyLog {
   meal3?: string;
   snacks?: string;
   mealsLogged: number;
-  // Supplements (true = taken)
-  supplements: Record<string, boolean>;
+  // Supplements (name -> dose string, e.g. "500mg")
+  supplements: Record<string, string>;
   supplementsTaken: number;
   supplementsTotal: number;
 }

@@ -145,7 +145,11 @@ export function Supplements({ dailyLogs }: Props) {
                 <div key={supp} className={styles.suppCol}>
                   {supp in day.supplements ? (
                     day.supplements[supp] ? (
-                      <span className={styles.taken}>✓</span>
+                      <span className={styles.taken} title={String(day.supplements[supp])}>
+                        {day.supplements[supp] !== 'true' && typeof day.supplements[supp] === 'string'
+                          ? day.supplements[supp]
+                          : '✓'}
+                      </span>
                     ) : (
                       <span className={styles.missed}>✗</span>
                     )

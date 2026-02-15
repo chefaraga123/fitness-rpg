@@ -313,10 +313,63 @@
   color: #a78bfa;
 }
 
+.selectedSupps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.selectedSuppRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 8px;
+}
+
+.selectedSuppName {
+  font-size: 0.85rem;
+  color: #a78bfa;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.doseInput {
+  flex: 1;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.doseInput:focus {
+  outline: none;
+  border-color: #a78bfa;
+}
+
 .addSuppRow {
   display: flex;
   gap: 8px;
   margin-top: 8px;
+}
+
+.addDoseInput {
+  width: 100px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.addDoseInput:focus {
+  outline: none;
+  border-color: #a78bfa;
 }
 
 .addSuppInput {

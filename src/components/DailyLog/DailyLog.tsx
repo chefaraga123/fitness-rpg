@@ -34,8 +34,9 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
   const [meal2, setMeal2] = useState('');
   const [meal3, setMeal3] = useState('');
   const [snacks, setSnacks] = useState('');
-  const [selectedSupplements, setSelectedSupplements] = useState<Set<string>>(new Set());
+  const [selectedSupplements, setSelectedSupplements] = useState<Map<string, string>>(new Map());
   const [newSupplement, setNewSupplement] = useState('');
+  const [newDose, setNewDose] = useState('');
 
   // Get known exercises for autocomplete
   const knownExercises = useMemo(() => {
@@ -44,13 +45,17 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
     return Array.from(exercises).sort();
   }, [existingSets]);
 
-  // Get known supplements from existing logs
+  // Get known supplements from existing logs with their last known dose
   const knownSupplements = useMemo(() => {
-    const supplements = new Set<string>();
-    existingLogs.forEach((log) => {
-      Object.keys(log.supplements).forEach((s) => supplements.add(s));
+    const supplements = new Map<string, string>();
+    // Sort logs by date ascending so later entries overwrite earlier ones
+    const sorted = [...existingLogs].sort((a, b) => a.date.localeCompare(b.date));
+    sorted.forEach((log) => {
+      Object.entries(log.supplements).forEach(([name, dose]) => {
+        if (dose) supplements.set(name, dose);
+      });
     });
-    return Array.from(supplements).sort();
+    return supplements;
   }, [existingLogs]);
 
   const addSetRow = () => {
@@ -94,21 +99,33 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
 
   const toggleSupplement = (supp: string) => {
     setSelectedSupplements((prev) => {
-      const next = new Set(prev);
+      const next = new Map(prev);
       if (next.has(supp)) {
         next.delete(supp);
       } else {
-        next.add(supp);
+        // Pre-fill with last known dose
+        const lastDose = knownSupplements.get(supp);
+        next.set(supp, lastDose && lastDose !== 'true' ? lastDose : '');
       }
       return next;
     });
   };
 
+  const updateSupplementDose = (supp: string, dose: string) => {
+    setSelectedSupplements((prev) => {
+      const next = new Map(prev);
+      next.set(supp, dose);
+      return next;
+    });
+  };
+
   const addNewSupplement = () => {
-    const trimmed = newSupplement.trim();
-    if (trimmed && !knownSupplements.includes(trimmed)) {
-      setSelectedSupplements((prev) => new Set([...prev, trimmed]));
+    const trimmedName = newSupplement.trim();
+    const trimmedDose = newDose.trim();
+    if (trimmedName && !selectedSupplements.has(trimmedName)) {
+      setSelectedSupplements((prev) => new Map([...prev, [trimmedName, trimmedDose]]));
       setNewSupplement('');
+      setNewDose('');
     }
   };
 
@@ -178,10 +195,15 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
       alert('Please select at least one supplement');
       return;
     }
-    const supplements: Record<string, boolean> = {};
-    const allSupps = new Set([...knownSupplements, ...selectedSupplements]);
-    allSupps.forEach((supp) => {
-      supplements[supp] = selectedSupplements.has(supp);
+    const supplements: Record<string, string> = {};
+    // All known supplement names + selected ones
+    const allSuppNames = new Set([...knownSupplements.keys(), ...selectedSupplements.keys()]);
+    allSuppNames.forEach((supp) => {
+      if (selectedSupplements.has(supp)) {
+        supplements[supp] = selectedSupplements.get(supp) || 'true';
+      } else {
+        supplements[supp] = '';
+      }
     });
 
     const log: DailyLogType = {
@@ -189,10 +211,10 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
       mealsLogged: 0,
       supplements,
       supplementsTaken: selectedSupplements.size,
-      supplementsTotal: allSupps.size,
+      supplementsTotal: allSuppNames.size,
     };
     onAddLog(log);
-    setSelectedSupplements(new Set());
+    setSelectedSupplements(new Map());
     alert('Supplements logged!');
   };
 
@@ -414,7 +436,7 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
         {activeSection === 'supplements' && (
           <>
             <div className={styles.supplementGrid}>
-              {knownSupplements.map((supp) => (
+              {Array.from(knownSupplements.keys()).map((supp) => (
                 <button
                   key={supp}
                   type="button"
@@ -425,14 +447,44 @@ export function DailyLog({ existingSets, existingLogs, onAddSets, onAddLog }: Pr
                 </button>
               ))}
             </div>
+            {selectedSupplements.size > 0 && (
+              <div className={styles.selectedSupps}>
+                {Array.from(selectedSupplements.entries()).map(([supp, dose]) => (
+                  <div key={supp} className={styles.selectedSuppRow}>
+                    <span className={styles.selectedSuppName}>{supp}</span>
+                    <input
+                      type="text"
+                      placeholder="Dose (e.g. 500mg)"
+                      value={dose}
+                      onChange={(e) => updateSupplementDose(supp, e.target.value)}
+                      className={styles.doseInput}
+                    />
+                    <button
+                      onClick={() => toggleSupplement(supp)}
+                      className={styles.removeBtn}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
             <div className={styles.addSuppRow}>
               <input
                 type="text"
-                placeholder="Add new supplement..."
+                placeholder="Supplement name..."
                 value={newSupplement}
                 onChange={(e) => setNewSupplement(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addNewSupplement()}
                 className={styles.addSuppInput}
+              />
+              <input
+                type="text"
+                placeholder="Dose"
+                value={newDose}
+                onChange={(e) => setNewDose(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && addNewSupplement()}
+                className={styles.addDoseInput}
               />
               <button onClick={addNewSupplement} className={styles.addSuppBtn}>
                 Add

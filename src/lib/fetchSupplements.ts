@@ -7,9 +7,9 @@ export async function insertSupplements(log: DailyLog): Promise<void> {
   if (!supabase) return;
 
   const rows: Array<{ date: string; supplement: string; dose: string }> = [];
-  for (const [name, taken] of Object.entries(log.supplements)) {
-    if (taken) {
-      rows.push({ date: log.date, supplement: name, dose: 'true' });
+  for (const [name, dose] of Object.entries(log.supplements)) {
+    if (dose) {
+      rows.push({ date: log.date, supplement: name, dose });
     }
   }
 
@@ -48,14 +48,14 @@ export async function fetchSupplements(): Promise<DailyLog[]> {
   }
 
   // Group by date into DailyLog-compatible objects
-  const byDate = new Map<string, Record<string, boolean>>();
+  const byDate = new Map<string, Record<string, string>>();
 
   for (const row of allRows) {
     if (!byDate.has(row.date)) {
       byDate.set(row.date, {});
     }
     const supps = byDate.get(row.date)!;
-    supps[row.supplement] = true;
+    supps[row.supplement] = row.dose;
   }
 
   return Array.from(byDate.entries()).map(([date, supplements]) => {

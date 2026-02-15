@@ -100,13 +100,14 @@ export function mapCSVToLifestyleLogs(
     ).length;
 
     // Parse supplements
-    const supplements: Record<string, boolean> = {};
+    const supplements: Record<string, string> = {};
     let supplementsTaken = 0;
     for (const col of mapping.supplements) {
-      const value = row[col]?.trim().toLowerCase();
+      const value = row[col]?.trim();
+      const lower = value?.toLowerCase();
       // Consider it taken if there's any truthy value (not empty, not '-', not 'no', not '0')
-      const taken = value && value !== '-' && value !== 'no' && value !== '0' && value !== '';
-      supplements[col] = !!taken;
+      const taken = lower && lower !== '-' && lower !== 'no' && lower !== '0' && lower !== '';
+      supplements[col] = taken ? (value || 'true') : '';
       if (taken) supplementsTaken++;
     }
 
