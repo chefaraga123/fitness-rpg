@@ -20,6 +20,20 @@ export async function insertWorkoutSets(sets: WorkoutSet[]): Promise<void> {
 
 const PAGE_SIZE = 1000;
 
+export async function renameExercise(oldNames: string[], newName: string): Promise<void> {
+  if (!supabase || oldNames.length === 0) return;
+
+  const { error } = await supabase
+    .from('workouts')
+    .update({ exercise: newName })
+    .in('exercise', oldNames);
+
+  if (error) {
+    console.error('Failed to rename exercises in Supabase:', error.message);
+    throw error;
+  }
+}
+
 export async function fetchWorkoutSets(): Promise<WorkoutSet[]> {
   if (!supabase) return [];
 

@@ -239,6 +239,27 @@ export function useGameState() {
     [addNotification]
   );
 
+  const renameExercises = useCallback(
+    (oldNames: string[], newName: string) => {
+      setState((prev) => {
+        const oldSet = new Set(oldNames);
+        const updatedSets = prev.sets.map((s) =>
+          oldSet.has(s.exercise) ? { ...s, exercise: newName } : s
+        );
+        const workouts = groupSetsIntoWorkouts(updatedSets);
+
+        return {
+          ...prev,
+          sets: updatedSets,
+          workouts,
+        };
+      });
+
+      addNotification(`Merged ${oldNames.length} exercises into "${newName}"`);
+    },
+    [addNotification]
+  );
+
   const resetProgress = useCallback(() => {
     const freshState = createInitialState();
     freshState.initialized = true;
@@ -253,6 +274,7 @@ export function useGameState() {
     importSets,
     importLogs,
     addDailyLog,
+    renameExercises,
     resetProgress,
     addNotification,
   };

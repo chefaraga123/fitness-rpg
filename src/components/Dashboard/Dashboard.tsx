@@ -10,6 +10,7 @@ import { Supplements } from '../Supplements';
 import { Insights } from '../Insights';
 import { Meals } from '../Meals';
 import { DailyLog } from '../DailyLog';
+import { ExerciseMerge } from '../ExerciseMerge';
 import styles from './Dashboard.module.css';
 
 interface PushNotificationsState {
@@ -30,6 +31,7 @@ interface Props {
   onImportSets: (sets: WorkoutSet[]) => void;
   onImportLogs: (logs: DailyLogType[]) => void;
   onAddDailyLog: (log: DailyLogType) => void;
+  onRenameExercises: (oldNames: string[], newName: string) => void;
   onSignOut: () => void;
 }
 
@@ -45,6 +47,7 @@ export function Dashboard({
   onImportSets,
   onImportLogs,
   onAddDailyLog,
+  onRenameExercises,
   onSignOut,
 }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
@@ -319,6 +322,7 @@ export function Dashboard({
           <div className={styles.importGrid}>
             <DataImport existingSets={state.sets} onImport={onImportSets} />
             <LifestyleImport existingLogs={state.dailyLogs} onImport={onImportLogs} />
+            <ExerciseMerge sets={state.sets} onMerge={onRenameExercises} />
           </div>
         )}
       </div>

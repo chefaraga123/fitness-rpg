@@ -18,7 +18,7 @@ import './App.css';
 
 function App() {
   const { session, loading: authLoading, signIn, signOut } = useAuth();
-  const { state, notifications, initializeCharacter, importSets, importLogs, addDailyLog } =
+  const { state, notifications, initializeCharacter, importSets, importLogs, addDailyLog, renameExercises } =
     useGameState();
 
   useSupabaseSync(state.initialized, state.sets, importSets);
@@ -72,6 +72,7 @@ function App() {
       onImportSets={importSetsWithSync}
       onImportLogs={importLogs}
       onAddDailyLog={addDailyLogWithSync}
+      onRenameExercises={renameExercises}
       onSignOut={signOut}
     />
   );
